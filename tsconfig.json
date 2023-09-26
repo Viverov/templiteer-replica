@@ -19,6 +19,12 @@
       "@src/*": [
         "src/*"
       ],
+      "@libs": [
+        "libs/core/src"
+      ],
+      "@libs/*": [
+        "libs/core/src/*"
+      ]
     }
   }
 }

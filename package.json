@@ -5,13 +5,25 @@
   "main": ".eslintrc.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "yarn build && node ./dist/index.js",
+    "build": "nest build",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
     "lint": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prepare": "husky install"
   },
+  "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^7.1.12",
+    "@nestjs/testing": "^10.2.6",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.2.0"
+  },
   "devDependencies": {
+    "@types/jest": "^29.5.5",
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
@@ -22,9 +34,12 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.3",
+    "jest": "^29.7.0",
     "prettier": "^2.8.8",
+    "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "5.1.6",
+    "webpack": "^5.88.2"
   },
   "author": "",
   "license": "ISC"
