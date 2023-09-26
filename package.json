@@ -1,0 +1,31 @@
+{
+  "name": "templiteer",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".eslintrc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "yarn build && node ./dist/index.js",
+    "lint": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-ban": "^1.6.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "husky": "^8.0.3",
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "author": "",
+  "license": "ISC"
+}
