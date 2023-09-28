@@ -1,8 +1,6 @@
 import { IsNotEmpty, validate, ValidateNested } from 'class-validator';
-import { ConfigModule, ConfigModuleOptions, ConfigService } from '@nestjs/config';
-import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigValidationError } from '@src/config/config-validation.error';
-import { PostgresConfig } from '@src/typeorm/postgres.config';
+import { PostgresConfig } from '@src/../../libs/core/src/typeorm/postgres.config';
 
 export class Config {
     @IsNotEmpty()
@@ -44,36 +42,3 @@ export const configuration = async (): Promise<Config> => {
     if (errors.length > 0) throw new ConfigValidationError(errors);
     return config;
 };
-
-@Module({})
-export class ExtendedConfigModule extends ConfigModule {
-    static forRoot(options: ConfigModuleOptions): DynamicModule {
-        let module = ConfigModule.forRoot(options);
-
-        module = addSubconfig({
-            module,
-            providerClass: PostgresConfig,
-            subconfigName: Subconfigs.Postgres,
-        });
-
-        return module;
-    }
-}
-
-type AddSubconfigArgs<T> = {
-    module: DynamicModule;
-    providerClass: { new (...any: any[]): T };
-    subconfigName: string;
-};
-const addSubconfig = <T>({ module, providerClass, subconfigName }: AddSubconfigArgs<T>): DynamicModule => ({
-    ...module,
-    providers: [
-        ...(module.providers || []),
-        {
-            provide: providerClass,
-            useFactory: (configService: ConfigService) => configService.get<T>(subconfigName),
-            inject: [ConfigService],
-        },
-    ],
-    exports: [...(module.exports || []), providerClass],
-});
