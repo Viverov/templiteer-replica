@@ -1,12 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { RequestMethod, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule, new FastifyAdapter());
+    const app = await NestFactory.create(AppModule);
 
     app.enableCors({
         origin: '*',

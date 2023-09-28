@@ -1,6 +1,6 @@
 import { IsNotEmpty, validate, ValidateNested } from 'class-validator';
 import { ConfigValidationError } from '@src/config/config-validation.error';
-import { PostgresConfig } from '@src/../../libs/core/src/typeorm/postgres.config';
+import { PostgresConfig } from '@libs/typeorm/postgres.config';
 
 export class Config {
     @IsNotEmpty()
