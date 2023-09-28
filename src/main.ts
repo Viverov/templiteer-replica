@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { RequestMethod, VersioningType } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule, new FastifyAdapter());
@@ -15,6 +16,23 @@ async function bootstrap(): Promise<void> {
     app.enableVersioning({
         type: VersioningType.URI,
     });
+
+    const swaggerConfig = new DocumentBuilder()
+        .addServer(`http://127.0.0.1:3000`, 'localhost')
+        .setTitle('Templiteer API')
+        .setDescription('Templiteer API example')
+        .setVersion('0.1')
+        .addCookieAuth(
+            'templiteer_login_session',
+            {
+                type: 'apiKey',
+                description: "Don't work from ui",
+            },
+            'Templiteer user',
+        )
+        .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig, {});
+    SwaggerModule.setup('api/docs', app, document, {});
 
     await app.listen(3000);
 }
