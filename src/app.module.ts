@@ -15,8 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }),
         TypeOrmModule.forRootAsync(<TypeOrmModuleAsyncOptions>{
             useFactory: (config: ConfigService) => {
-                const postgresConfig = config.get<PostgresConfig>(Subconfigs.Postgres);
-                if (!postgresConfig) throw new Error('Postgres subconfig not defined');
+                const postgresConfig = config.getOrThrow<PostgresConfig>(Subconfigs.Postgres);
                 return typeormOptionsFactory(postgresConfig, {
                     entities: [__dirname + '/../**/*.entity{.ts,.js}', __dirname + '/../../libs/**/*.entity{.ts,.js}'],
                     migrations: [

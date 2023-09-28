@@ -9,6 +9,8 @@ export class Config {
     isDevelopment?: boolean;
     @IsNotEmpty()
     isTest?: boolean;
+    @IsNotEmpty()
+    port?: number;
     @ValidateNested()
     postgres?: PostgresConfig;
 }
@@ -23,6 +25,8 @@ export const configuration = async (): Promise<Config> => {
     config.env = process.env.NODE_ENV;
     config.isDevelopment = process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'development';
     config.isTest = process.env.NODE_ENV === 'test';
+
+    config.port = parseConfigInt(process.env.SERVER_PORT);
 
     config[Subconfigs.Postgres] = new PostgresConfig({
         url: process.env.DATABASE_URL,
@@ -42,3 +46,5 @@ export const configuration = async (): Promise<Config> => {
     if (errors.length > 0) throw new ConfigValidationError(errors);
     return config;
 };
+
+const parseConfigInt = (val?: string): number | undefined => (typeof val === 'undefined' ? val : parseInt(val));
