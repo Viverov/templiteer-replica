@@ -16,4 +16,5 @@ export const typeormOptionsFactory: (postgresConfig: PostgresConfig, paths: Path
     migrations: paths.migrations,
     migrationsRun: false,
     synchronize: false,
+    autoLoadEntities: true,
 });

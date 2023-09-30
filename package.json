@@ -11,6 +11,10 @@
     "start:prod": "node dist/src/main",
     "lint": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "$(yarn bin eslint)  \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "migration:run": "yarn ts-node --project tsconfig.json -r tsconfig-paths/register $(yarn bin typeorm) -d ./ormconfig.ts migration:run",
+    "migration:revert": "yarn ts-node --project tsconfig.json -r tsconfig-paths/register $(yarn bin typeorm)  -d ./ormconfig.ts migration:revert",
+    "migration:generate": "yarn ts-node --project tsconfig.json -r tsconfig-paths/register $(yarn bin typeorm)  -d ./ormconfig.ts migration:generate",
+    "migration:create": "yarn ts-node --project tsconfig.json -r tsconfig-paths/register $(yarn bin typeorm) migration:create",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -24,6 +28,7 @@
     "@nestjs/testing": "^10.2.6",
     "@nestjs/typeorm": "^10.0.0",
     "class-validator": "^0.14.0",
+    "dotenv": "^16.3.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
@@ -45,6 +50,7 @@
     "prettier": "2.8.8",
     "ts-loader": "9.4.4",
     "ts-node": "10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.1.6",
     "webpack": "5.88.2"
   },
