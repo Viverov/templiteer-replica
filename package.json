@@ -23,12 +23,10 @@
     "test:e2e:debugger": "DEBUGGER=1 /bin/bash ./sh/run_e2e_tests.sh"
   },
   "dependencies": {
-    "@fastify/static": "^6.11.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
-    "@nestjs/platform-fastify": "^10.2.6",
     "@nestjs/swagger": "^7.1.12",
     "@nestjs/testing": "^10.2.6",
     "@nestjs/typeorm": "^10.0.0",
