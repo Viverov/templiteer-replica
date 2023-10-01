@@ -1,0 +1,14 @@
+FROM node:18.14
+
+# Install dependencies
+RUN apt-get update
+RUN apt-get install -y postgresql-client
+RUN yarn install
+
+# Set env
+ENV NODE_ENV=test
+
+# Set workdir
+WORKDIR /app
+
+CMD ./sh/execute_tests.sh

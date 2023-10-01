@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  templiteer-dbtest:
+    image: postgres:13.5
+    restart: always
+    environment:
+      POSTGRES_USER: testus
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+  server:
+    container_name: templiteer_test_runner
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    env_file:
+      - ./.env-test
+    environment:
+      - DEBUGGER=$DEBUGGER
+    ports:
+      - 9229:9229
+    volumes:
+      # Code directories
+      - ./src:/app/src
+      - ./test:/app/test
+      - ./sh:/app/sh
+      - ./libs:/app/libs
+      # Configs
+      - ./nest-cli.json:/app/nest-cli.json
+      - ./ormconfig.ts:/app/ormconfig.ts
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./yarn.lock:/app/yarn.lock
+    depends_on:
+      - templiteer-dbtest

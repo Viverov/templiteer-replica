@@ -10,9 +10,7 @@ async function bootstrap(): Promise<void> {
     app.enableCors({
         origin: '*',
     });
-    app.setGlobalPrefix('api', {
-        exclude: [{ path: '/', method: RequestMethod.GET }],
-    });
+    app.setGlobalPrefix('api', {});
     app.enableVersioning({
         type: VersioningType.URI,
     });
