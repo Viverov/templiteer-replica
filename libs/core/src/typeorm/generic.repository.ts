@@ -42,7 +42,8 @@ export class GenericRepository<Model extends ObjectLiteral> implements IGenericR
     }
 
     async findOne(options: IFindOneOptions<Model>): Promise<Optional<Model>> {
-        return Optional.ofNullable(await this.repository.findOne(<FindOneOptions>options));
+        const m = await this.repository.findOne(<FindOneOptions>options);
+        return Optional.ofNullable(m);
     }
 
     async findOneById(id: string): Promise<Optional<Model>> {

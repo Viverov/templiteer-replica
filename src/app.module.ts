@@ -9,6 +9,7 @@ import { TemplatesModule } from './templates/templates.module';
 import { WebModule } from '@src/web/web.module';
 import { UsersModule } from '@src/users/users.module';
 import { SoftwareModule } from '@src/software/software.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { SoftwareModule } from '@src/software/software.module';
         SoftwareModule,
         TemplatesModule,
         UsersModule,
+        AuthModule,
         WebModule,
     ],
     controllers: [AppController],

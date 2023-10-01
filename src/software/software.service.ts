@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SoftwareRepository } from '@src/software/software.repository';
 import { Software } from '@src/software/software.entity';
 import Optional from 'optional-js';
-import { NotFoundByIdError } from '@libs/errors/not-found-by-id.error';
+import { NotFoundError } from '@libs/errors/not-found.error';
 
 @Injectable()
 export class SoftwareService {
@@ -29,7 +29,7 @@ export class SoftwareService {
             .map(async () => {
                 await this.softwareRepository.update({ id, officialName });
             })
-            .orElseThrow(() => new NotFoundByIdError('software', id));
+            .orElseThrow(() => new NotFoundError('software', { id }));
     }
 
     async remove(id: string): Promise<void> {
@@ -39,6 +39,6 @@ export class SoftwareService {
             .map(async () => {
                 await this.softwareRepository.softRemove(id);
             })
-            .orElseThrow(() => new NotFoundByIdError('software', id));
+            .orElseThrow(() => new NotFoundError('software', { id }));
     }
 }

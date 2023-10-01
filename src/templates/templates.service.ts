@@ -4,7 +4,7 @@ import Optional from 'optional-js';
 import { TemplatesRepository } from '@src/templates/templates.repository';
 import { SoftwareService } from '@src/software/software.service';
 import { UsersService } from '@src/users/users.service';
-import { NotFoundByIdError } from '@libs/errors/not-found-by-id.error';
+import { NotFoundError } from '@libs/errors/not-found.error';
 
 @Injectable()
 export class TemplatesService {
@@ -23,9 +23,9 @@ export class TemplatesService {
         softwareId: string;
         templateText: string;
     }): Promise<Template> {
-        (await this.usersService.findOneById(userId)).orElseThrow(() => new NotFoundByIdError('user', userId));
+        (await this.usersService.findOneById(userId)).orElseThrow(() => new NotFoundError('user', { id: userId }));
         (await this.softwareService.findOneById(softwareId)).orElseThrow(
-            () => new NotFoundByIdError('software', softwareId),
+            () => new NotFoundError('software', { id: softwareId }),
         );
 
         return Template.fromModel(
@@ -54,7 +54,7 @@ export class TemplatesService {
             .map(async () => {
                 await this.templatesRepository.update({ id, templateText });
             })
-            .orElseThrow(() => new NotFoundByIdError('template', id));
+            .orElseThrow(() => new NotFoundError('template', { id }));
     }
 
     async remove(id: string): Promise<void> {
@@ -64,6 +64,6 @@ export class TemplatesService {
             .map(async () => {
                 await this.templatesRepository.softRemove(id);
             })
-            .orElseThrow(() => new NotFoundByIdError('software', id));
+            .orElseThrow(() => new NotFoundError('software', { id }));
     }
 }
