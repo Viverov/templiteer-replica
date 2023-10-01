@@ -20,7 +20,6 @@ beforeAll(async () => {
     });
 
     await app.init();
-    await app.getHttpAdapter().getInstance();
 });
 
 beforeEach(async () => {
