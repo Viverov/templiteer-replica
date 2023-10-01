@@ -1,24 +1,69 @@
 import { Injectable } from '@nestjs/common';
+import { Template } from '@src/templates/template.entity';
+import Optional from 'optional-js';
+import { TemplatesRepository } from '@src/templates/templates.repository';
+import { SoftwareService } from '@src/software/software.service';
+import { UsersService } from '@src/users/users.service';
+import { NotFoundByIdError } from '@libs/errors/not-found-by-id.error';
 
 @Injectable()
 export class TemplatesService {
-    create() {
-        return 'This action adds a new template';
+    constructor(
+        private templatesRepository: TemplatesRepository,
+        private softwareService: SoftwareService,
+        private usersService: UsersService,
+    ) {}
+
+    async create({
+        userId,
+        softwareId,
+        templateText,
+    }: {
+        userId: string;
+        softwareId: string;
+        templateText: string;
+    }): Promise<Template> {
+        (await this.usersService.findOneById(userId)).orElseThrow(() => new NotFoundByIdError('user', userId));
+        (await this.softwareService.findOneById(softwareId)).orElseThrow(
+            () => new NotFoundByIdError('software', softwareId),
+        );
+
+        return Template.fromModel(
+            await this.templatesRepository.create({
+                userId,
+                softwareId,
+                templateText,
+            }),
+        );
     }
 
-    findAll() {
-        return `This action returns all templates`;
+    async findAll({ search }: { search: string }): Promise<Template[]> {
+        return (await this.templatesRepository.findBySearch({ search })).map((m) => Template.fromModel(m));
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} template`;
+    async findOneById(id: string): Promise<Optional<Template>> {
+        return (await this.templatesRepository.findOneById(id))
+            .map((m) => Optional.of(Template.fromModel(m)))
+            .orElse(Optional.empty());
     }
 
-    update(id: number) {
-        return `This action updates a #${id} template`;
+    async update(id: string, { templateText }: { templateText: string }): Promise<void> {
+        await (
+            await this.findOneById(id)
+        )
+            .map(async () => {
+                await this.templatesRepository.update({ id, templateText });
+            })
+            .orElseThrow(() => new NotFoundByIdError('template', id));
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} template`;
+    async remove(id: string): Promise<void> {
+        await (
+            await this.findOneById(id)
+        )
+            .map(async () => {
+                await this.templatesRepository.softRemove(id);
+            })
+            .orElseThrow(() => new NotFoundByIdError('software', id));
     }
 }
