@@ -1,6 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { RolesGuard } from '@src/auth/roles.guard';
@@ -17,6 +17,12 @@ async function bootstrap(): Promise<void> {
         type: VersioningType.URI,
     });
 
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            transform: true,
+        }),
+    );
     app.useGlobalGuards(new RolesGuard(new Reflector()));
 
     const swaggerConfig = new DocumentBuilder()
