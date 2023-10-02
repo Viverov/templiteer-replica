@@ -1,6 +1,5 @@
 import { ExtendedController } from '@libs/nest/ExtendedController';
-import { Body, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from '@src/auth/local-auth.guard';
+import { Body, Get, Post, Request, UnauthorizedException } from '@nestjs/common';
 import { LoginResponse } from '@src/web/auth/controller-types/login.response';
 import { AuthService } from '@src/auth/auth.service';
 import { Request as RequestExpress } from 'express';
@@ -11,6 +10,7 @@ import { UserAuthInfo } from '@src/auth/user-auth-info';
 import { MeResponse } from '@src/web/auth/controller-types/me.response';
 import { Roles } from '@src/auth/roles.decorator';
 import { RoleTypes } from '@src/auth/role-types';
+import { LoginBody } from '@src/web/auth/controller-types/login.body';
 
 @ExtendedController({
     path: 'auth',
@@ -19,11 +19,13 @@ import { RoleTypes } from '@src/auth/role-types';
 export class AuthController {
     constructor(private authService: AuthService, private usersService: UsersService) {}
 
-    @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Request() req: RequestExpress): Promise<LoginResponse> {
+    async login(@Request() req: RequestExpress, @Body() body: LoginBody): Promise<LoginResponse> {
+        const isValidUser = await this.usersService.validateUser(body.email, body.password);
+        if (!isValidUser) throw new UnauthorizedException();
+        const user = (await this.usersService.findOneByEmail(body.email)).get();
         return {
-            access_token: this.authService.generateJwtToken(<UserAuthInfo>req.user),
+            access_token: this.authService.generateJwtToken({ email: user.email, userId: user.id }),
         };
     }
 
