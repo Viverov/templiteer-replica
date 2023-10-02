@@ -30,6 +30,7 @@ afterAll(async () => {
     await app.close();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getApp = (): INestApplication => {
     if (!app) {
         throw new Error(`App exist only in 'it' or hooks ('beforeEach', 'afterEach', etc) context!`);

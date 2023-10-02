@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { PostgresConfig } from '@src/../libs/core/src/typeorm/postgres.config';
@@ -10,6 +10,9 @@ import { WebModule } from '@src/web/web.module';
 import { UsersModule } from '@src/users/users.module';
 import { SoftwareModule } from '@src/software/software.module';
 import { AuthModule } from './auth/auth.module';
+import { AuthJwtMiddleware } from '@src/auth/auth-jwt.middleware';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfig } from '@src/auth/jwt.config';
 
 @Module({
     imports: [
@@ -31,6 +34,17 @@ import { AuthModule } from './auth/auth.module';
             },
             inject: [ConfigService],
         }),
+        JwtModule.registerAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => {
+                const jwtConfig = configService.getOrThrow<JwtConfig>(Subconfigs.Jwt);
+                return {
+                    secret: jwtConfig.secret,
+                    signOptions: { expiresIn: jwtConfig.expireIn },
+                };
+            },
+            global: true,
+        }),
         SoftwareModule,
         TemplatesModule,
         UsersModule,
@@ -40,4 +54,8 @@ import { AuthModule } from './auth/auth.module';
     controllers: [AppController],
     providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): any {
+        consumer.apply(AuthJwtMiddleware).forRoutes('*');
+    }
+}

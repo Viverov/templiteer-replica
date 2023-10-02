@@ -4,11 +4,11 @@ import { LocalAuthGuard } from '@src/auth/local-auth.guard';
 import { LoginResponse } from '@src/web/auth/controller-types/login.response';
 import { AuthService } from '@src/auth/auth.service';
 import { Request as RequestExpress } from 'express';
-import { User } from '@src/users/user.entity';
 import { RegisterBody } from '@src/web/auth/controller-types/register.body';
 import { UsersService } from '@src/users/users.service';
 import { SuccessResponse } from '@libs/types/success.response';
-import { JwtAuthGuard } from '@src/auth/jwt-auith.guard';
+import { UserAuthInfo } from '@src/auth/user-auth-info';
+import { MeResponse } from '@src/web/auth/controller-types/me.response';
 
 @ExtendedController({
     path: 'auth',
@@ -21,7 +21,7 @@ export class AuthController {
     @Post('login')
     async login(@Request() req: RequestExpress): Promise<LoginResponse> {
         return {
-            access_token: this.authService.login(<User>req.user).accessToken,
+            access_token: this.authService.login(<UserAuthInfo>req.user).accessToken,
         };
     }
 
@@ -31,9 +31,12 @@ export class AuthController {
         return { success: true };
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('me')
-    getMe(@Request() req: RequestExpress): any {
-        return req.user;
+    getMe(@Request() req: RequestExpress): MeResponse {
+        const user = <UserAuthInfo>req.user;
+        return {
+            id: user.id,
+            email: user.email,
+        };
     }
 }
