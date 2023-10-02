@@ -4,7 +4,26 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": false
+    "webpack": false,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "dtoFileNameSuffix": [
+            ".response.ts",
+            ".body.ts",
+            ".entity.ts",
+            ".query.ts"
+          ],
+          "introspectComments": true,
+          "controllerFileNameSuffix": [
+            ".controller.ts",
+            ".controller.v1.ts",
+            ".controller.*.ts"
+          ]
+        }
+      }
+    ]
   },
   "projects": {
     "core": {

@@ -4,6 +4,7 @@ import { VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { RolesGuard } from '@src/auth/roles.guard';
+import { RoleTypes } from '@src/auth/role-types';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule);
@@ -23,13 +24,12 @@ async function bootstrap(): Promise<void> {
         .setTitle('Templiteer API')
         .setDescription('Templiteer API example')
         .setVersion('0.1')
-        .addCookieAuth(
-            'templiteer_login_session',
+        .addBearerAuth(
             {
                 type: 'apiKey',
                 description: "Don't work from ui",
             },
-            'Templiteer user',
+            RoleTypes.User,
         )
         .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig, {});
