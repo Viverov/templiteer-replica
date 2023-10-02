@@ -12,7 +12,7 @@ const SALT_ROUNDS = 10;
 export class UsersService {
     constructor(private usersRepository: UsersRepository) {}
 
-    async create({ email, plainPassword }: { email: string; plainPassword: string }): Promise<User> {
+    async register({ email, plainPassword }: { email: string; plainPassword: string }): Promise<User> {
         (await this.usersRepository.findOne({ where: { email: email.toLowerCase() } })).ifPresent(() => {
             throw new EmailAlreadyExistsError(email);
         });
