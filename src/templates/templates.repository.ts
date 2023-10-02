@@ -9,11 +9,22 @@ export class TemplatesRepository extends GenericRepository<TemplateModel> {
         super(dataSource.getRepository(TemplateModel));
     }
 
-    async findBySearch({ search }: { search: string }): Promise<TemplateModel[]> {
+    async findBySearch({
+        search,
+        limit,
+        offset,
+    }: {
+        search: string;
+        limit: number;
+        offset: number;
+    }): Promise<TemplateModel[]> {
         return this.repository.find({
             where: {
                 templateText: ILike(`%${search}%`),
             },
+            take: limit,
+            skip: offset,
+            order: { id: 'ASC' },
         });
     }
 }

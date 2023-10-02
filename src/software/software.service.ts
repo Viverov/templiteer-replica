@@ -12,8 +12,13 @@ export class SoftwareService {
         return Software.fromModel(await this.softwareRepository.create({ officialName }));
     }
 
-    async findAll({ search }: { search: string }): Promise<Software[]> {
-        return (await this.softwareRepository.findBySearch({ search })).map((m) => Software.fromModel(m));
+    async findAll(args: { search?: string; limit?: number; offset?: number }): Promise<Software[]> {
+        const search = args.search || '';
+        const limit = args.limit || 100;
+        const offset = args.offset || 0;
+        return (await this.softwareRepository.findBySearch({ search, limit, offset })).map((m) =>
+            Software.fromModel(m),
+        );
     }
 
     async findOneById(id: string): Promise<Optional<Software>> {

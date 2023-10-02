@@ -37,8 +37,13 @@ export class TemplatesService {
         );
     }
 
-    async findAll({ search }: { search: string }): Promise<Template[]> {
-        return (await this.templatesRepository.findBySearch({ search })).map((m) => Template.fromModel(m));
+    async findAll(args: { search?: string; limit?: number; offset?: number }): Promise<Template[]> {
+        const search = args.search || '';
+        const limit = args.limit || 100;
+        const offset = args.offset || 0;
+        return (await this.templatesRepository.findBySearch({ search, limit, offset })).map((m) =>
+            Template.fromModel(m),
+        );
     }
 
     async findOneById(id: string): Promise<Optional<Template>> {
