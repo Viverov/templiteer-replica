@@ -1,8 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { RolesGuard } from '@src/auth/roles.guard';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule);
@@ -14,6 +15,8 @@ async function bootstrap(): Promise<void> {
     app.enableVersioning({
         type: VersioningType.URI,
     });
+
+    app.useGlobalGuards(new RolesGuard(new Reflector()));
 
     const swaggerConfig = new DocumentBuilder()
         .addServer(`http://127.0.0.1:3000`, 'localhost')

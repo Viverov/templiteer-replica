@@ -1,5 +1,5 @@
 import { ExtendedController } from '@libs/nest/ExtendedController';
-import { Post, UseGuards, Request, Body, Get } from '@nestjs/common';
+import { Body, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '@src/auth/local-auth.guard';
 import { LoginResponse } from '@src/web/auth/controller-types/login.response';
 import { AuthService } from '@src/auth/auth.service';
@@ -9,6 +9,8 @@ import { UsersService } from '@src/users/users.service';
 import { SuccessResponse } from '@libs/types/success.response';
 import { UserAuthInfo } from '@src/auth/user-auth-info';
 import { MeResponse } from '@src/web/auth/controller-types/me.response';
+import { Roles } from '@src/auth/roles.decorator';
+import { RoleTypes } from '@src/auth/role-types';
 
 @ExtendedController({
     path: 'auth',
@@ -21,7 +23,7 @@ export class AuthController {
     @Post('login')
     async login(@Request() req: RequestExpress): Promise<LoginResponse> {
         return {
-            access_token: this.authService.login(<UserAuthInfo>req.user).accessToken,
+            access_token: this.authService.generateJwtToken(<UserAuthInfo>req.user),
         };
     }
 
@@ -32,6 +34,7 @@ export class AuthController {
     }
 
     @Get('me')
+    @Roles([RoleTypes.User])
     getMe(@Request() req: RequestExpress): MeResponse {
         const user = <UserAuthInfo>req.user;
         return {
