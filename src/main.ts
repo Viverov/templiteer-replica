@@ -21,6 +21,9 @@ async function bootstrap(): Promise<void> {
         new ValidationPipe({
             whitelist: true,
             transform: true,
+            transformOptions: {
+                enableImplicitConversion: true,
+            },
         }),
     );
     app.useGlobalGuards(new RolesGuard(new Reflector()));

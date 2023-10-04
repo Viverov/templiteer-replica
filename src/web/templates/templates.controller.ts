@@ -18,7 +18,7 @@ import { RoleTypes } from '@src/auth/role-types';
 import { Request as RequestExpress } from 'express';
 import { TemplateResponse } from '@src/web/templates/controller-types/template.response';
 import { FindTemplatesQuery } from '@src/web/templates/controller-types/find-templates.query';
-import { IdParam } from '@src/web/templates/controller-types/id-param';
+import { IdParams } from '@src/web/templates/controller-types/id.params';
 import { UpdateTemplateBody } from '@src/web/templates/controller-types/update-template.body';
 import { SuccessResponse } from '@libs/types/success.response';
 import { FindMyTemplatesQuery } from '@src/web/templates/controller-types/find-my-templates.query';
@@ -66,7 +66,7 @@ export class TemplatesController {
     }
 
     @Get(':id')
-    async findOne(@Param() params: IdParam): Promise<TemplateResponse> {
+    async findOne(@Param() params: IdParams): Promise<TemplateResponse> {
         return (await this.templatesService.findOneById(<string>params.id))
             .map((t) => TemplateResponse.fromTemplate(t))
             .orElseThrow(() => new NotFoundException());
@@ -76,7 +76,7 @@ export class TemplatesController {
     @Roles([RoleTypes.User])
     async update(
         @Request() req: RequestExpress,
-        @Param() params: IdParam,
+        @Param() params: IdParams,
         @Body() body: UpdateTemplateBody,
     ): Promise<SuccessResponse> {
         const templateOpt = await this.templatesService.findOneById(<string>params.id);
@@ -96,7 +96,7 @@ export class TemplatesController {
 
     @Delete(':id')
     @Roles([RoleTypes.User])
-    async remove(@Request() req: RequestExpress, @Param() params: IdParam): Promise<SuccessResponse> {
+    async remove(@Request() req: RequestExpress, @Param() params: IdParams): Promise<SuccessResponse> {
         const templateOpt = await this.templatesService.findOneById(<string>params.id);
         templateOpt.ifPresentOrElse(
             (t) => {

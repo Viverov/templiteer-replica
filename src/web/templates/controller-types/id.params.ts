@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 
-export class IdParam {
+export class IdParams {
     @IsNotEmpty()
     @IsNumberString()
     id?: string;
