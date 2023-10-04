@@ -13,7 +13,8 @@
             ".response.ts",
             ".body.ts",
             ".entity.ts",
-            ".query.ts"
+            ".query.ts",
+            ".params.ts"
           ],
           "introspectComments": true,
           "controllerFileNameSuffix": [

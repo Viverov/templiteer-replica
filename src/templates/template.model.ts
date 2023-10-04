@@ -6,7 +6,7 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from 'typeorm';
 import { UserModel } from '@src/users/user.model';
 import { SoftwareModel } from '@src/software/software.model';

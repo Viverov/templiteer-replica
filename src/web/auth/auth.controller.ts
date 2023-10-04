@@ -21,9 +21,9 @@ export class AuthController {
 
     @Post('login')
     async login(@Request() req: RequestExpress, @Body() body: LoginBody): Promise<LoginResponse> {
-        const isValidUser = await this.usersService.validateUser(body.email, body.password);
+        const isValidUser = await this.usersService.validateUser(<string>body.email, <string>body.password);
         if (!isValidUser) throw new UnauthorizedException();
-        const user = (await this.usersService.findOneByEmail(body.email)).get();
+        const user = (await this.usersService.findOneByEmail(<string>body.email)).get();
         return {
             access_token: this.authService.generateJwtToken({ email: user.email, userId: user.id }),
         };
@@ -31,7 +31,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() body: RegisterBody): Promise<SuccessResponse> {
-        await this.usersService.register({ email: body.email, plainPassword: body.password });
+        await this.usersService.register({ email: <string>body.email, plainPassword: <string>body.password });
         return { success: true };
     }
 

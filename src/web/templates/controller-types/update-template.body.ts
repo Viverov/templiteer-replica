@@ -1,2 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class UpdateTemplateBody {}
+import { IsNotEmpty, IsString } from 'class-validator';
+
+export class UpdateTemplateBody {
+    @IsNotEmpty()
+    @IsString()
+    template_text?: string;
+}

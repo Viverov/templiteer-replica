@@ -1,10 +1,14 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterBody {
     @IsNotEmpty()
     @IsString()
-    email = '';
+    @ApiProperty({ required: true })
+    email?: string;
+
     @IsNotEmpty()
     @IsString()
-    password = '';
+    @ApiProperty({ required: true })
+    password?: string;
 }
