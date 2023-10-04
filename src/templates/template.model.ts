@@ -1,4 +1,13 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    DeleteDateColumn,
+    Entity,
+    Index,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from 'typeorm';
 import { UserModel } from '@src/users/user.model';
 import { SoftwareModel } from '@src/software/software.model';
 
@@ -25,4 +34,20 @@ export class TemplateModel {
 
     @Column({ name: 'template_text', type: 'text' })
     templateText?: string;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+        type: 'timestamp with time zone',
+        default: () => 'CURRENT_TIMESTAMP(6)',
+        onUpdate: 'CURRENT_TIMESTAMP(6)',
+        nullable: false,
+    })
+    updatedAt?: Date;
+
+    @DeleteDateColumn({
+        name: 'deleted_at',
+        type: 'timestamp with time zone',
+        nullable: true,
+    })
+    deletedAt?: Date;
 }
