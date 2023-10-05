@@ -14,6 +14,7 @@ export class AuthJwtMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: any): Promise<void> {
         const authorizationHeader: string | undefined = req.headers.authorization;
         if (!authorizationHeader) return next();
+
         const token = this.extractTokenFromHeader(authorizationHeader);
 
         const jwtConfig = this.configService.getOrThrow<JwtConfig>(Subconfigs.Jwt);

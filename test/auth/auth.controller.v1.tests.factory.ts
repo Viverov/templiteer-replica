@@ -1,4 +1,4 @@
-import { TestsFactory } from 'test/types/tests.factory';
+import { TestsFactory } from '../types/tests.factory';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { UsersService } from '@src/users/users.service';
 import request from 'supertest';
@@ -6,13 +6,18 @@ import { RegisterBody } from '@src/web/auth/controller-types/register.body';
 import { SuccessResponse } from '@libs/types/success.response';
 import { faker } from '@faker-js/faker';
 import { LoginBody } from '@src/web/auth/controller-types/login.body';
+import { AuthService } from '@src/auth/auth.service';
+import { initDefaultUser } from '../utils/init-default-user';
+import { MeResponse } from '@src/web/auth/controller-types/me.response';
 
 export const authControllerV1TestsFactory: TestsFactory = (getApp: () => INestApplication): void => {
     describe('AuthControllerV1 (e2e, /api/v1/auth)', () => {
         let usersService: UsersService;
+        let authService: AuthService;
 
         beforeAll(() => {
             usersService = getApp().get<UsersService>(UsersService);
+            authService = getApp().get<AuthService>(AuthService);
         });
 
         describe('Register (POST /register)', () => {
@@ -103,6 +108,41 @@ export const authControllerV1TestsFactory: TestsFactory = (getApp: () => INestAp
 
                 // Check result
                 expect(result.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+            });
+        });
+
+        describe('Me (Get /me)', () => {
+            let id = '';
+            let email = '';
+            let token = '';
+
+            beforeEach(async () => {
+                const userInfo = await initDefaultUser(usersService, authService);
+                id = userInfo.id;
+                email = userInfo.email;
+                token = userInfo.token;
+            });
+
+            it('should return users profile', async () => {
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .get('/api/v1/auth/me')
+                    .auth(token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.OK);
+                expect(result.body).toEqual(<MeResponse>{
+                    id,
+                    email,
+                });
+            });
+
+            it('should return forbidden error for unauthorized user', async () => {
+                // Call method
+                const result = await request(await getApp().getHttpServer()).get('/api/v1/auth/me');
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.FORBIDDEN);
             });
         });
     });

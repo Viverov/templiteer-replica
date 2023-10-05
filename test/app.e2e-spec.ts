@@ -1,9 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { AppModule } from '@src/app.module';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import {INestApplication, ValidationPipe, VersioningType} from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { cleanDB } from './utils/clean-db';
 import { authControllerV1TestsFactory } from './auth/auth.controller.v1.tests.factory';
+import {RolesGuard} from "@src/auth/roles.guard";
+import {Reflector} from "@nestjs/core";
 
 let app: INestApplication;
 
@@ -19,6 +21,17 @@ beforeAll(async () => {
     app.enableVersioning({
         type: VersioningType.URI,
     });
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            transform: true,
+            transformOptions: {
+                enableImplicitConversion: true,
+            },
+        }),
+    );
+    app.useGlobalGuards(new RolesGuard(new Reflector()));
 
     await app.init();
 });

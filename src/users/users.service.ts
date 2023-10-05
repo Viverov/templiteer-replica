@@ -4,7 +4,6 @@ import Optional from 'optional-js';
 import { UsersRepository } from '@src/users/users.repository';
 import { EmailAlreadyExistsError } from '@src/users/errors/email-already-exists.error';
 import bcrypt from 'bcrypt';
-import { NotFoundError } from '@libs/errors/not-found.error';
 
 const SALT_ROUNDS = 10;
 
