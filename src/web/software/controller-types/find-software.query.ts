@@ -1,5 +1,5 @@
-import {IsNumber, IsOptional, IsString, Max} from "class-validator";
-import {ApiProperty} from "@nestjs/swagger";
+import { IsNumber, IsOptional, IsString, Max } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FindSoftwareQuery {
     @IsOptional()
