@@ -6,6 +6,7 @@ export class CreateTemplateBody {
     @IsNumberString()
     @ApiProperty({ required: true })
     software_id?: string;
+
     @IsNotEmpty()
     @IsString()
     @ApiProperty({ required: true })
