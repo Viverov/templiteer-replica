@@ -27,7 +27,7 @@ import { FindMyTemplatesQuery } from '@src/web/templates/controller-types/find-m
     path: 'templates',
     version: '1',
 })
-export class TemplatesController {
+export class TemplatesControllerV1 {
     constructor(private readonly templatesService: TemplatesService) {}
 
     @Post()

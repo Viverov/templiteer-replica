@@ -13,7 +13,7 @@ import { SoftwareResponse } from '@src/web/software/controller-types/software.re
     path: 'software',
     version: '1',
 })
-export class SoftwareController {
+export class SoftwareControllerV1 {
     constructor(private readonly softwareService: SoftwareService) {}
 
     @Post()

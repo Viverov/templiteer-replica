@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { SoftwareModule } from '@src/software/software.module';
-import { SoftwareController } from '@src/web/software/software.controller';
+import { SoftwareControllerV1 } from '@src/web/software/software.controller.v1';
 
 @Module({
     imports: [SoftwareModule],
-    controllers: [SoftwareController],
+    controllers: [SoftwareControllerV1],
 })
 export class SoftwareWebModule {}

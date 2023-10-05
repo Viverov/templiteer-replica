@@ -16,7 +16,7 @@ import { LoginBody } from '@src/web/auth/controller-types/login.body';
     path: 'auth',
     version: '1',
 })
-export class AuthController {
+export class AuthControllerV1 {
     constructor(private authService: AuthService, private usersService: UsersService) {}
 
     @Post('login')
