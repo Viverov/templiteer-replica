@@ -1,7 +1,11 @@
-import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { TemplateModel } from '@src/templates/template.model';
 
 @Entity('users', { schema: 'public' })
+@Index('users_email_unique_index', ['email'], {
+    unique: true,
+    where: 'deleted_at IS NULL',
+})
 export class UserModel {
     @PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
     id?: string;
@@ -9,7 +13,7 @@ export class UserModel {
     @Column({ name: 'password', type: 'character varying' })
     password?: string;
 
-    @Column({ name: 'email', type: 'character varying', unique: true })
+    @Column({ name: 'email', type: 'character varying' })
     email?: string;
 
     @OneToMany(() => TemplateModel, (template: TemplateModel) => template.user)

@@ -3,6 +3,7 @@ import { AppModule } from '@src/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { cleanDB } from './utils/clean-db';
+import { authControllerV1TestsFactory } from './auth/auth.controller.v1.tests.factory';
 
 let app: INestApplication;
 
@@ -43,3 +44,5 @@ describe('demo', () => {
         expect(1 + 1).toBe(2);
     });
 });
+
+authControllerV1TestsFactory(getApp);

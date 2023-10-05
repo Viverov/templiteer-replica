@@ -27,7 +27,7 @@ export class UsersService {
 
     async validateUser(email: string, plainPassword: string): Promise<boolean> {
         const userOpt = await this.usersRepository.findOne({ where: { email: email.toLowerCase() } });
-        userOpt.orElseThrow(() => new NotFoundError('user', { email }));
+        if (!userOpt.isPresent()) return false;
         const userModel = userOpt.get();
         return (
             userModel && typeof userModel.password !== 'undefined' && bcrypt.compare(plainPassword, userModel.password)
