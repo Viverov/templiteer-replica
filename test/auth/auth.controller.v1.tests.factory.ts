@@ -112,9 +112,9 @@ export const authControllerV1TestsFactory: TestsFactory = (getApp: () => INestAp
         });
 
         describe('Me (Get /me)', () => {
-            let id = '';
-            let email = '';
-            let token = '';
+            let id: string;
+            let email: string;
+            let token: string;
 
             beforeEach(async () => {
                 const userInfo = await initDefaultUser(usersService, authService);

@@ -1,11 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { AppModule } from '@src/app.module';
-import {INestApplication, ValidationPipe, VersioningType} from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { cleanDB } from './utils/clean-db';
 import { authControllerV1TestsFactory } from './auth/auth.controller.v1.tests.factory';
-import {RolesGuard} from "@src/auth/roles.guard";
-import {Reflector} from "@nestjs/core";
+import { RolesGuard } from '@src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
+import { softwareControllerV1TestsFactory } from './software/software.controller.v1.tests.factory';
 
 let app: INestApplication;
 
@@ -59,3 +60,4 @@ describe('demo', () => {
 });
 
 authControllerV1TestsFactory(getApp);
+softwareControllerV1TestsFactory(getApp);
