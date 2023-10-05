@@ -4,6 +4,7 @@ import {
     Delete,
     ForbiddenException,
     Get,
+    InternalServerErrorException,
     NotFoundException,
     Param,
     Patch,
@@ -22,6 +23,8 @@ import { IdParams } from '@src/web/templates/controller-types/id.params';
 import { UpdateTemplateBody } from '@src/web/templates/controller-types/update-template.body';
 import { SuccessResponse } from '@libs/types/success.response';
 import { FindMyTemplatesQuery } from '@src/web/templates/controller-types/find-my-templates.query';
+import { TemplatesResponse } from '@src/web/templates/controller-types/templates.response';
+import { NotFoundError } from '@libs/errors/not-found.error';
 
 @ExtendedController({
     path: 'templates',
@@ -33,36 +36,43 @@ export class TemplatesControllerV1 {
     @Post()
     @Roles([RoleTypes.User])
     async create(@Request() req: RequestExpress, @Body() body: CreateTemplateBody): Promise<TemplateResponse> {
-        return TemplateResponse.fromTemplate(
-            await this.templatesService.create({
+        try {
+            return TemplateResponse.fromTemplate(
+                await this.templatesService.create({
+                    userId: <string>req.user?.id,
+                    templateText: <string>body.template_text,
+                    softwareId: <string>body.software_id,
+                }),
+            );
+        } catch (err) {
+            if (err instanceof NotFoundError) {
+                throw new NotFoundException();
+            }
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('my')
+    @Roles([RoleTypes.User])
+    async findMy(@Request() req: RequestExpress, @Query() query: FindMyTemplatesQuery): Promise<TemplatesResponse> {
+        return TemplatesResponse.fromTemplates(
+            await this.templatesService.findMy({
                 userId: <string>req.user?.id,
-                templateText: <string>body.template_text,
-                softwareId: <string>body.software_id,
+                limit: query.limit,
+                offset: query.offset,
             }),
         );
     }
 
     @Get()
-    async findAll(@Query() query: FindTemplatesQuery): Promise<TemplateResponse[]> {
-        return (
+    async findAll(@Query() query: FindTemplatesQuery): Promise<TemplatesResponse> {
+        return TemplatesResponse.fromTemplates(
             await this.templatesService.findAll({
                 search: query.search,
                 limit: query.limit,
                 offset: query.offset,
-            })
-        ).map((t) => TemplateResponse.fromTemplate(t));
-    }
-
-    @Get('my')
-    @Roles([RoleTypes.User])
-    async findMy(@Request() req: RequestExpress, @Query() query: FindMyTemplatesQuery): Promise<TemplateResponse[]> {
-        return (
-            await this.templatesService.findMy({
-                userId: <string>req.user?.id,
-                limit: query.limit,
-                offset: query.offset,
-            })
-        ).map((t) => TemplateResponse.fromTemplate(t));
+            }),
+        );
     }
 
     @Get(':id')

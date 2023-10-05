@@ -7,6 +7,7 @@ import { authControllerV1TestsFactory } from './auth/auth.controller.v1.tests.fa
 import { RolesGuard } from '@src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { softwareControllerV1TestsFactory } from './software/software.controller.v1.tests.factory';
+import { templatesControllerV1TestsFactory } from './templates/templates.controller.v1.tests.factory';
 
 let app: INestApplication;
 
@@ -61,3 +62,4 @@ describe('demo', () => {
 
 authControllerV1TestsFactory(getApp);
 softwareControllerV1TestsFactory(getApp);
+templatesControllerV1TestsFactory(getApp);

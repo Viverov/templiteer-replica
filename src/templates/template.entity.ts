@@ -1,12 +1,8 @@
-import { BaseObject } from '@libs/types/base-object';
 import { TemplateModel } from '@src/templates/template.model';
 import { ConvertFromModelError } from '@libs/errors/convert-from-model.error';
 
-export class Template extends BaseObject<Template> {
-    id = '0';
-    userId = '0';
-    softwareId = '0';
-    templateText = '';
+export class Template {
+    constructor(public id: string, public userId: string, public softwareId: string, public templateText: string) {}
 
     static fromModel(model: TemplateModel): Template {
         if (
@@ -18,11 +14,6 @@ export class Template extends BaseObject<Template> {
             throw new ConvertFromModelError();
         }
 
-        return new Template({
-            id: model.id,
-            userId: model.userId,
-            softwareId: model.softwareId,
-            templateText: model.templateText,
-        });
+        return new Template(model.id, model.userId, model.softwareId, model.templateText);
     }
 }
