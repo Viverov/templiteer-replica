@@ -2,6 +2,7 @@ import { IsNotEmpty, validate, ValidateNested } from 'class-validator';
 import { ConfigValidationError } from '@src/config/config-validation.error';
 import { PostgresConfig } from '@libs/typeorm/postgres.config';
 import { JwtConfig } from '@src/auth/jwt.config';
+import { LoggerConfig, LoggerLevels } from '@libs/log/logger.config';
 
 export class Config {
     @IsNotEmpty()
@@ -16,11 +17,14 @@ export class Config {
     postgres?: PostgresConfig;
     @ValidateNested()
     jwt?: JwtConfig;
+    @ValidateNested()
+    logger?: LoggerConfig;
 }
 
 export enum Subconfigs {
     Postgres = 'postgres',
     Jwt = 'jwt',
+    Logger = 'logger',
 }
 
 export const configuration = async (): Promise<Config> => {
@@ -39,6 +43,10 @@ export const configuration = async (): Promise<Config> => {
     config[Subconfigs.Jwt] = new JwtConfig({
         secret: process.env.JWT_SECRET,
         expireIn: process.env.JWT_EXPIRE_IN,
+    });
+
+    config[Subconfigs.Logger] = new LoggerConfig({
+        level: <LoggerLevels>(<unknown>process.env.LOG_LEVEL),
     });
 
     const errors = await validate(config, {

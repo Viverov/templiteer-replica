@@ -15,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConfig } from '@src/auth/jwt.config';
 import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import * as winston from 'winston';
+import { LoggerConfig } from '@libs/log/logger.config';
 
 @Module({
     imports: [
@@ -23,18 +24,24 @@ import * as winston from 'winston';
             isGlobal: true,
             load: [configuration],
         }),
-        WinstonModule.forRoot({
-            level: 'debug',
-            transports: [
-                new winston.transports.Console({
-                    handleExceptions: true,
-                    format: winston.format.combine(
-                        winston.format.errors({ stack: true }),
-                        winston.format.timestamp(),
-                        nestWinstonModuleUtilities.format.nestLike(),
-                    ),
-                }),
-            ],
+        WinstonModule.forRootAsync({
+            useFactory: (config: ConfigService) => {
+                const loggerConfig = config.getOrThrow<LoggerConfig>(Subconfigs.Logger);
+                return {
+                    level: loggerConfig.level,
+                    transports: [
+                        new winston.transports.Console({
+                            handleExceptions: true,
+                            format: winston.format.combine(
+                                winston.format.errors({ stack: true }),
+                                winston.format.timestamp(),
+                                nestWinstonModuleUtilities.format.nestLike(),
+                            ),
+                        }),
+                    ],
+                };
+            },
+            inject: [ConfigService],
         }),
         TypeOrmModule.forRootAsync(<TypeOrmModuleAsyncOptions>{
             useFactory: (config: ConfigService) => {
