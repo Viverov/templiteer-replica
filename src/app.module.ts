@@ -16,6 +16,7 @@ import { JwtConfig } from '@src/auth/jwt.config';
 import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggerConfig } from '@libs/log/logger.config';
+import { RequestIdMiddleware } from '@libs/request-id/request-id.middleware';
 
 @Module({
     imports: [
@@ -78,6 +79,7 @@ import { LoggerConfig } from '@libs/log/logger.config';
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer): any {
+        consumer.apply(RequestIdMiddleware).forRoutes('*');
         consumer.apply(AuthJwtMiddleware).forRoutes('*');
     }
 }

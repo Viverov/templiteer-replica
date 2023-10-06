@@ -10,16 +10,35 @@ export class LoggerInterceptor implements NestInterceptor {
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const req: Request = context.switchToHttp().getRequest();
-        const { body, method, originalUrl, user } = req;
+        const { body, method, originalUrl, user, requestId } = req;
 
         const timerStart = Date.now();
+        this.logger.debug(
+            JSON.stringify({
+                status: 'REQUEST_START',
+                requestId,
+                body: this.sanitizeBody(body),
+                method,
+                originalUrl,
+                user,
+            }),
+        );
         return next.handle().pipe(
             tap(() => {
                 const timeInMs = Date.now() - timerStart;
                 const res: Response = context.switchToHttp().getResponse();
                 const { statusCode } = res;
                 this.logger.info(
-                    JSON.stringify({ body: this.sanitizeBody(body), method, originalUrl, user, timeInMs, statusCode }),
+                    JSON.stringify({
+                        status: 'REQUEST_COMPLETE',
+                        requestId,
+                        body: this.sanitizeBody(body),
+                        method,
+                        originalUrl,
+                        user,
+                        timeInMs,
+                        statusCode,
+                    }),
                 );
             }),
         );
