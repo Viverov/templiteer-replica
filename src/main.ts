@@ -5,11 +5,27 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { RolesGuard } from '@src/auth/roles.guard';
 import { RoleTypes } from '@src/auth/role-types';
-import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER, WinstonModule } from 'nest-winston';
 import { LoggerInterceptor } from '@libs/log/logger.interceptor';
+import * as winston from 'winston';
+import { utilities as nestWinstonModuleUtilities } from 'nest-winston/dist/winston.utilities';
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger: WinstonModule.createLogger({
+            level: 'verbose',
+            transports: [
+                new winston.transports.Console({
+                    handleExceptions: true,
+                    format: winston.format.combine(
+                        winston.format.errors({ stack: true }),
+                        winston.format.timestamp(),
+                        nestWinstonModuleUtilities.format.nestLike(),
+                    ),
+                }),
+            ],
+        }),
+    });
 
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
     app.enableCors({
