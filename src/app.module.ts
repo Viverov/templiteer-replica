@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 import { AuthJwtMiddleware } from '@src/auth/auth-jwt.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfig } from '@src/auth/jwt.config';
+import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
     imports: [
@@ -20,6 +22,19 @@ import { JwtConfig } from '@src/auth/jwt.config';
             envFilePath: `.env`,
             isGlobal: true,
             load: [configuration],
+        }),
+        WinstonModule.forRoot({
+            level: 'debug',
+            transports: [
+                new winston.transports.Console({
+                    handleExceptions: true,
+                    format: winston.format.combine(
+                        winston.format.errors({ stack: true }),
+                        winston.format.timestamp(),
+                        nestWinstonModuleUtilities.format.nestLike(),
+                    ),
+                }),
+            ],
         }),
         TypeOrmModule.forRootAsync(<TypeOrmModuleAsyncOptions>{
             useFactory: (config: ConfigService) => {
