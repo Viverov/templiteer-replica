@@ -13,11 +13,15 @@ import { Template } from '@src/templates/template.entity';
 import { TemplatesResponse } from '@src/web/templates/controller-types/templates.response';
 import { FindMyTemplatesQuery } from '@src/web/templates/controller-types/find-my-templates.query';
 import { FindTemplatesQuery } from '@src/web/templates/controller-types/find-templates.query';
+import { UpdateTemplateBody } from '@src/web/templates/controller-types/update-template.body';
 
 export const templatesControllerV1TestsFactory: TestsFactory = (getApp) => {
     describe('TemplatesControllerV1 (/api/v1/templates)', () => {
         let templatesService: TemplatesService;
         let softwareService: SoftwareService;
+
+        let usersService: UsersService;
+        let authService: AuthService;
 
         let userId: string;
         let token: string;
@@ -27,10 +31,13 @@ export const templatesControllerV1TestsFactory: TestsFactory = (getApp) => {
         beforeAll(() => {
             templatesService = getApp().get(TemplatesService);
             softwareService = getApp().get(SoftwareService);
+
+            usersService = getApp().get(UsersService);
+            authService = getApp().get(AuthService);
         });
 
         beforeEach(async () => {
-            const userInfo = await initDefaultUser(getApp().get(UsersService), getApp().get(AuthService));
+            const userInfo = await initDefaultUser(usersService, authService);
             userId = userInfo.id;
             token = userInfo.token;
 
@@ -89,7 +96,7 @@ export const templatesControllerV1TestsFactory: TestsFactory = (getApp) => {
                 }
                 myTemplates = createdTemplates;
 
-                const anotherUser = await initDefaultUser(getApp().get(UsersService), getApp().get(AuthService));
+                const anotherUser = await initDefaultUser(usersService, authService);
                 await templatesService.create({
                     userId: anotherUser.id,
                     templateText: faker.word.words(3),
@@ -194,6 +201,113 @@ export const templatesControllerV1TestsFactory: TestsFactory = (getApp) => {
                 expect(result.body).toHaveProperty('templates');
                 expect((<TemplatesResponse>result.body).templates.length).toEqual(1);
                 expect((<TemplatesResponse>result.body).templates[0].id).toEqual(templates[0].id);
+            });
+        });
+
+        describe('Update templates (PATCH /:id)', () => {
+            let template: Template;
+
+            beforeEach(async () => {
+                template = await templatesService.create({
+                    userId,
+                    templateText: faker.word.words(3),
+                    softwareId: software.id,
+                });
+            });
+
+            it('should update existing template', async () => {
+                // Prepare data
+                const newText = faker.word.words({ count: 5 });
+
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .patch(`/api/v1/templates/${template.id}`)
+                    .send(<UpdateTemplateBody>{
+                        template_text: newText,
+                    })
+                    .auth(token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.OK);
+                const newTemplate = await templatesService.findOneById(template.id);
+                expect(newTemplate.isPresent()).toBeTruthy();
+                expect(newTemplate.get().templateText).toEqual(newText);
+            });
+
+            it('should throw not found for unexsisting template', async () => {
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .patch(`/api/v1/templates/${template.id + 1}`)
+                    .send(<UpdateTemplateBody>{
+                        template_text: faker.word.words({ count: 5 }),
+                    })
+                    .auth(token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.NOT_FOUND);
+            });
+
+            it('should throw forbidden for invalid user', async () => {
+                // Prepare data
+                const anotherUser = await initDefaultUser(usersService, authService);
+
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .patch(`/api/v1/templates/${template.id}`)
+                    .send(<UpdateTemplateBody>{
+                        template_text: faker.word.words({ count: 5 }),
+                    })
+                    .auth(anotherUser.token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.FORBIDDEN);
+            });
+        });
+
+        describe('Delete template (DELETE /:id)', () => {
+            let template: Template;
+
+            beforeEach(async () => {
+                template = await templatesService.create({
+                    userId,
+                    templateText: faker.word.words(3),
+                    softwareId: software.id,
+                });
+            });
+
+            it('should delete existing template', async () => {
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .delete(`/api/v1/templates/${template.id}`)
+                    .auth(token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.OK);
+                const newTemplate = await templatesService.findOneById(template.id);
+                expect(newTemplate.isPresent()).toBeFalsy();
+            });
+
+            it('should throw not found for unexsisting template', async () => {
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .delete(`/api/v1/templates/${template.id + 1}`)
+                    .auth(token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.NOT_FOUND);
+            });
+
+            it('should throw forbidden for invalid user', async () => {
+                // Prepare data
+                const anotherUser = await initDefaultUser(usersService, authService);
+
+                // Call method
+                const result = await request(await getApp().getHttpServer())
+                    .delete(`/api/v1/templates/${template.id}`)
+                    .auth(anotherUser.token, { type: 'bearer' });
+
+                // Check result
+                expect(result.statusCode).toEqual(HttpStatus.FORBIDDEN);
             });
         });
     });
